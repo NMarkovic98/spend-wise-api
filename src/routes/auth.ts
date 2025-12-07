@@ -59,7 +59,7 @@ router.get("/google/callback", (req, res, next) => {
       const params = new URLSearchParams({
         token,
         id: user.id.toString(),
-        name: user.name || "",
+        name: user.fullname || "", // ← POPRAVLJENO
         email: user.email || "",
         picture: user.picture || "",
       });
@@ -68,5 +68,4 @@ router.get("/google/callback", (req, res, next) => {
     }
   )(req, res, next);
 });
-
 export default router;

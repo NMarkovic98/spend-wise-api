@@ -13,6 +13,7 @@ export const findOrCreateGoogleUser = async (profile: any) => {
       email: emails[0].value,
       fullname: displayName,
     });
+    //test
     await userRepo.save(user);
     console.log("Created new user:", user);
   } else {
