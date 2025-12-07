@@ -34,19 +34,37 @@ router.get("/google/callback", (req, res, next) => {
     "google",
     { session: false },
     (err: any, user: any, info: any) => {
+      const frontendURL = process.env.FRONTEND_URL || "http://localhost:3000";
+
       if (err) {
         console.error("Passport callback error:", err);
-        return res.status(500).json({ error: "OAuth failed" });
+        return res.redirect(
+          `${frontendURL}/auth/callback?error=${encodeURIComponent(
+            "OAuth failed"
+          )}`
+        );
       }
       if (!user) {
-        return res.status(400).json({ error: "No user returned from Google" });
+        return res.redirect(
+          `${frontendURL}/auth/callback?error=${encodeURIComponent(
+            "No user returned from Google"
+          )}`
+        );
       }
 
       const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET!, {
         expiresIn: "7d",
       });
 
-      res.json({ token, user });
+      const params = new URLSearchParams({
+        token,
+        id: user.id.toString(),
+        name: user.name || "",
+        email: user.email || "",
+        picture: user.picture || "",
+      });
+
+      res.redirect(`${frontendURL}/auth/callback?${params.toString()}`);
     }
   )(req, res, next);
 });
