@@ -1,10 +1,11 @@
 import { User } from "../entities/user";
 import { AppDataSource } from "../config/database";
 
-const userRepo = AppDataSource.getRepository(User);
-
 export const findOrCreateGoogleUser = async (profile: any) => {
   const { id, displayName, emails } = profile;
+
+  const userRepo = AppDataSource.getRepository(User);
+
   let user = await userRepo.findOne({ where: { google_id: id } });
   if (!user) {
     user = userRepo.create({
@@ -13,6 +14,10 @@ export const findOrCreateGoogleUser = async (profile: any) => {
       fullname: displayName,
     });
     await userRepo.save(user);
+    console.log("Created new user:", user);
+  } else {
+    console.log("Found existing user:", user);
   }
+
   return user;
 };
